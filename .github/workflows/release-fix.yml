@@ -50,5 +50,9 @@ jobs:
         uses: softprops/action-gh-release@v2
         with:
           generate_release_notes: true
-          prerelease: ${{ contains(github.ref_name, '-') }}
+          # Publish as a FULL release (not pre-release) so HACS uses release
+          # tracking even with "Show beta versions" off. Otherwise, with only
+          # pre-releases present, HACS falls back to tracking the default branch
+          # (old `main`) and offers a downgrade.
+          prerelease: false
           files: googlefindmy.zip
