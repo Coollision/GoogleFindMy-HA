@@ -267,12 +267,12 @@
           "delete_caches_on_remove": "Delete caches when removing entry",
           "map_view_token_expiration": "Enable map view token expiration",
           "contributor_mode": "Location contributor mode",
-          "min_accuracy_m": "Minimum accuracy floor (m)",
+          "min_accuracy_m": "Minimum accuracy (m)",
           "subentry": "Feature group"
         },
         "data_description": {
           "stale_threshold": "After this many seconds without a location update, the tracker state becomes unknown. Use the 'Last Location' entity to always see the last known position. Default: 1800 (30 minutes).",
-          "min_accuracy_m": "Fixes worse than this accuracy (in metres) are ignored — the tracker goes unknown instead of jumping zones on junk crowdsourced reports. 0 = disabled (accept all fixes). Recommended: 150 m. Your small home-zone radius is ~70 m, so anything coarser than that is likely jitter.",
+          "min_accuracy_m": "Ignore fixes worse than this accuracy. Crowdsourced network fixes are often 100–300 m and cause spurious zone changes near small zones. Default 150 m keeps precise fixes (owner-phone or BLE, typically <50 m) and silences junk. Set lower (e.g. 75 m) if you have a very small home zone. Set to 0 to accept all fixes.",
           "show_location_age": "When enabled (default), a 'location_age' attribute (rounded to 1 minute) is added to each tracker entity. Disable to eliminate all database writes for stationary devices. The absolute 'last_seen' attribute and sensor.*_last_seen entities are always available.",
           "delete_caches_on_remove": "Remove cached tokens and device metadata when this entry is deleted.",
           "map_view_token_expiration": "When enabled, map view tokens expire after 1 week. When disabled (default), tokens do not expire.",

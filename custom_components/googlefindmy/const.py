@@ -217,7 +217,7 @@ DEFAULT_STALE_THRESHOLD: int = 1800
 DEFAULT_SHOW_LOCATION_AGE: bool = True
 # Fixes with accuracy worse than this (in metres) are treated as stale and
 # do not update the tracker state or zone. 0 = disabled (accept all fixes).
-DEFAULT_MIN_ACCURACY_M: int = 0
+DEFAULT_MIN_ACCURACY_M: int = 150
 
 CONTRIBUTOR_MODE_HIGH_TRAFFIC: str = "high_traffic"
 CONTRIBUTOR_MODE_IN_ALL_AREAS: str = "in_all_areas"
