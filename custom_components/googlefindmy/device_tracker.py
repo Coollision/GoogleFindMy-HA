@@ -42,8 +42,10 @@ from . import EntityRecoveryManager, _extract_email_from_entry, _opt
 from .const import (
     CONF_OAUTH_TOKEN,
     DATA_SECRET_BUNDLE,
+    DEFAULT_MIN_ACCURACY_M,
     DEFAULT_SHOW_LOCATION_AGE,
     DOMAIN,
+    OPT_MIN_ACCURACY_M,
     OPT_SHOW_LOCATION_AGE,
     TRACKER_SUBENTRY_KEY,
 )
@@ -1174,13 +1176,49 @@ class GoogleFindMyDeviceTracker(GoogleFindMyDeviceEntity, TrackerEntity, Restore
     # _attr_* attributes before every async_write_ha_state() call.
     # ------------------------------------------------------------------
 
+    def _get_min_accuracy_m(self) -> float:
+        """Return the configured minimum-accuracy floor in metres (0 = disabled)."""
+        entry = getattr(self.coordinator, "config_entry", None)
+        if entry is None:
+            return DEFAULT_MIN_ACCURACY_M
+        options = getattr(entry, "options", {})
+        if not isinstance(options, Mapping):
+            return DEFAULT_MIN_ACCURACY_M
+        val = options.get(OPT_MIN_ACCURACY_M, DEFAULT_MIN_ACCURACY_M)
+        try:
+            return float(val)
+        except (TypeError, ValueError):
+            return DEFAULT_MIN_ACCURACY_M
+
+    def _is_accuracy_too_poor(self) -> bool:
+        """Return True if the current fix is worse than the configured floor.
+
+        When the accuracy floor is enabled (> 0 m) and the best available fix
+        is less precise than the threshold, the fix is treated the same as a
+        stale fix: lat/lon are blanked so the tracker goes unknown rather than
+        jitter-jumping across nearby zones on low-quality crowdsourced reports.
+        """
+        floor = self._get_min_accuracy_m()
+        if floor <= 0:
+            return False
+        data = self._current_row() or self._last_good_accuracy_data
+        if not data:
+            return False
+        acc = data.get("accuracy")
+        if acc is None:
+            return False
+        try:
+            return float(acc) > floor
+        except (TypeError, ValueError):
+            return False
+
     def _sync_location_attrs(self) -> None:
         """Recompute and publish every TrackerEntity attribute via _attr_*.
 
         Must be called before *every* ``async_write_ha_state()`` so that
         HA's ``CachedProperties`` mechanism picks up fresh values.
         """
-        stale = self._is_location_stale()
+        stale = self._is_location_stale() or self._is_accuracy_too_poor()
 
         # Single source of truth for every published value below (coordinates,
         # name, age, status, extra attributes). Binding them all to this one

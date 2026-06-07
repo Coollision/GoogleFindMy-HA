@@ -93,6 +93,7 @@ from .const import (
     # Defaults
     DEFAULT_LOCATION_POLL_INTERVAL,
     DEFAULT_MAP_VIEW_TOKEN_EXPIRATION,
+    DEFAULT_MIN_ACCURACY_M,
     DEFAULT_OPTIONS,
     DEFAULT_ROUNDTRIP_CONFIRM,
     DEFAULT_SEMANTIC_DETECTION_RADIUS,
@@ -112,6 +113,7 @@ from .const import (
     OPT_OPTIONS_SCHEMA_VERSION,
     OPT_ROUNDTRIP_CONFIRM,
     OPT_SEMANTIC_LOCATIONS,
+    OPT_MIN_ACCURACY_M,
     OPT_SHOW_LOCATION_AGE,
     OPT_SPEED_GATE_ENABLED,
     OPT_STALE_THRESHOLD,
@@ -5453,6 +5455,7 @@ class OptionsFlowHandler(OptionsFlowBase, _OptionsFlowMixin):  # type: ignore[mi
             OPT_ROUNDTRIP_CONFIRM: _get(
                 OPT_ROUNDTRIP_CONFIRM, DEFAULT_ROUNDTRIP_CONFIRM
             ),
+            OPT_MIN_ACCURACY_M: _get(OPT_MIN_ACCURACY_M, DEFAULT_MIN_ACCURACY_M),
         }
         if (
             OPT_GOOGLE_HOME_FILTER_ENABLED is not None
@@ -5578,6 +5581,24 @@ class OptionsFlowHandler(OptionsFlowBase, _OptionsFlowMixin):  # type: ignore[mi
         _register(vol.Optional(OPT_SHOW_LOCATION_AGE), bool)
         _register(vol.Optional(OPT_SPEED_GATE_ENABLED), bool)
         _register(vol.Optional(OPT_ROUNDTRIP_CONFIRM), bool)
+        if selector is not None:
+            _register(
+                vol.Optional(OPT_MIN_ACCURACY_M),
+                selector({
+                    "number": {
+                        "min": 0,
+                        "max": 500,
+                        "step": 10,
+                        "unit_of_measurement": "m",
+                        "mode": "slider",
+                    }
+                }),
+            )
+        else:
+            _register(
+                vol.Optional(OPT_MIN_ACCURACY_M),
+                vol.All(vol.Coerce(int), vol.Range(min=0, max=500)),
+            )
 
         base_schema = vol.Schema(fields)
         schema_with_defaults = self.add_suggested_values_to_schema(base_schema, current)

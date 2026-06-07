@@ -123,6 +123,7 @@ OPT_STALE_THRESHOLD: str = "stale_threshold"
 OPT_SHOW_LOCATION_AGE: str = "show_location_age"
 OPT_SPEED_GATE_ENABLED: str = "speed_gate_enabled"
 OPT_ROUNDTRIP_CONFIRM: str = "roundtrip_confirm_enabled"
+OPT_MIN_ACCURACY_M: str = "min_accuracy_m"
 # Legacy option key - kept for reading old configurations, no longer used
 OPT_STALE_THRESHOLD_ENABLED: str = "stale_threshold_enabled"
 
@@ -144,6 +145,7 @@ OPTION_KEYS: tuple[str, ...] = (
     OPT_SHOW_LOCATION_AGE,
     OPT_SPEED_GATE_ENABLED,
     OPT_ROUNDTRIP_CONFIRM,
+    OPT_MIN_ACCURACY_M,
 )
 
 # Keys which may exist historically in entry.data and should be soft-copied to entry.options
@@ -261,6 +263,9 @@ DEFAULT_DELETE_CACHES_ON_REMOVE: bool = True
 # Minimum: 300 seconds (5 minutes) - allows ~2-3 active-scan update cycles
 DEFAULT_STALE_THRESHOLD: int = 3900
 DEFAULT_SHOW_LOCATION_AGE: bool = True
+# Fixes with accuracy worse than this (in metres) are treated as stale and
+# do not update the tracker state or zone. 0 = disabled (accept all fixes).
+DEFAULT_MIN_ACCURACY_M: int = 0
 
 DEFAULT_SPEED_GATE_ENABLED: bool = True
 # Kinematic plausibility cap (m/s). ~1440 km/h: above the record jetstream
@@ -314,6 +319,7 @@ DEFAULT_OPTIONS: dict[str, object] = {
     OPT_SHOW_LOCATION_AGE: DEFAULT_SHOW_LOCATION_AGE,
     OPT_SPEED_GATE_ENABLED: DEFAULT_SPEED_GATE_ENABLED,
     OPT_ROUNDTRIP_CONFIRM: DEFAULT_ROUNDTRIP_CONFIRM,
+    OPT_MIN_ACCURACY_M: DEFAULT_MIN_ACCURACY_M,
 }
 
 # -------------------- Options schema versioning (lightweight) --------------------
