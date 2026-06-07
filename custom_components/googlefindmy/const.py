@@ -265,7 +265,7 @@ DEFAULT_STALE_THRESHOLD: int = 3900
 DEFAULT_SHOW_LOCATION_AGE: bool = True
 # Fixes with accuracy worse than this (in metres) are treated as stale and
 # do not update the tracker state or zone. 0 = disabled (accept all fixes).
-DEFAULT_MIN_ACCURACY_M: int = 0
+DEFAULT_MIN_ACCURACY_M: int = 150
 
 DEFAULT_SPEED_GATE_ENABLED: bool = True
 # Kinematic plausibility cap (m/s). ~1440 km/h: above the record jetstream
