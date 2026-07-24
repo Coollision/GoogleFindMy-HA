@@ -1385,8 +1385,18 @@ class GoogleFindMyDeviceTracker(GoogleFindMyDeviceEntity, TrackerEntity, Restore
 
         Suppresses no-op writes so ``last_updated`` advances only on a genuinely
         new fix, which keeps multi-tracker ``person`` selection correct.
+
+        The base entity fires an initial ``_handle_coordinator_update`` from
+        ``async_added_to_hass`` before the entity is fully wired. If the state
+        signature cannot be computed yet (``_attr_*`` not populated, coordinator
+        not ready), fall back to a plain write -- the behaviour the tracker had
+        before write-gating was introduced -- rather than raise.
         """
-        signature = self._state_signature()
+        try:
+            signature = self._state_signature()
+        except AttributeError:
+            self.async_write_ha_state()
+            return
         if signature == self._last_write_sig:
             return
         self._last_write_sig = signature
@@ -1407,19 +1417,22 @@ class GoogleFindMyDeviceTracker(GoogleFindMyDeviceEntity, TrackerEntity, Restore
         last_seen = self._fix_time_epoch()
         if last_seen is None:
             return
-        state_obj = self.hass.states.get(self.entity_id)
+        states = getattr(self.hass, "states", None)
+        if states is None:
+            return
+        state_obj = states.get(self.entity_id)
         if state_obj is None:
             return
         # Already aligned (within 1 s) -> avoid a redundant re-stamp event.
         if abs(state_obj.last_updated.timestamp() - last_seen) < 1.0:
             return
         try:
-            self.hass.states.async_set(
+            states.async_set(
                 self.entity_id,
                 state_obj.state,
                 dict(state_obj.attributes),
                 force_update=True,
-                context=self._context,
+                context=getattr(self, "_context", None),
                 timestamp=last_seen,
             )
         except TypeError:
