@@ -41,10 +41,19 @@ jobs:
 
       - name: Build HACS ZIP asset
         run: |
-          cd custom_components
-          zip -r ../googlefindmy.zip googlefindmy
-          cd ..
+          # hacs.json declares zip_release=true, so HACS extracts this zip's
+          # ROOT directly into custom_components/googlefindmy/ -- it does NOT
+          # strip a wrapping folder. Zipping the `googlefindmy` directory
+          # itself (rather than its contents) put every file one level too
+          # deep on install (custom_components/googlefindmy/googlefindmy/...),
+          # which left the integration undiscoverable after the 1.7.15.11
+          # HACS update. Zip the directory's *contents* flat instead.
+          cd custom_components/googlefindmy
+          zip -r ../../googlefindmy.zip .
+          cd ../..
           ls -l googlefindmy.zip
+          echo "--- zip root entries (sanity: must be manifest.json etc., not a googlefindmy/ subfolder) ---"
+          unzip -l googlefindmy.zip | head -5
 
       - name: Create GitHub release
         uses: softprops/action-gh-release@v2
