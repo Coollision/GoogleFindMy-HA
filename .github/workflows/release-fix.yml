@@ -1,0 +1,58 @@
+name: Release (fork dev builds)
+
+# Fork-friendly release flow for testing the person/last_updated fix.
+# The upstream semantic-release workflow is gated to jleinenbach/BSkando and
+# triggers off `main`; this one runs on ANY owner and is driven by a pushed
+# version tag, matching jleinenbach's unprefixed `1.7.0-N.M` dev scheme:
+#
+#   git tag 1.7.0-6.1
+#   git push <remote> 1.7.0-6.1
+#
+# Then add the fork as a HACS custom repository (category: Integration) and
+# install the published version.
+
+on:
+  push:
+    tags:
+      - "1.*"      # jleinenbach style: unprefixed, e.g. 1.7.0-6.1
+      - "v*"       # also accept v/V-prefixed tags
+      - "V*"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out the pushed tag
+        uses: actions/checkout@v4
+
+      - name: Validate manifest version matches tag
+        if: startsWith(github.ref, 'refs/tags/')
+        run: |
+          TAG="${GITHUB_REF_NAME#[vV]}"
+          MANIFEST=$(python3 -c "import json;print(json.load(open('custom_components/googlefindmy/manifest.json'))['version'])")
+          echo "tag=$TAG manifest=$MANIFEST"
+          if [ "$TAG" != "$MANIFEST" ]; then
+            echo "::warning::Tag ($TAG) does not match manifest version ($MANIFEST). HACS uses the manifest version."
+          fi
+
+      - name: Build HACS ZIP asset
+        run: |
+          cd custom_components
+          zip -r ../googlefindmy.zip googlefindmy
+          cd ..
+          ls -l googlefindmy.zip
+
+      - name: Create GitHub release
+        uses: softprops/action-gh-release@v2
+        with:
+          generate_release_notes: true
+          # Publish as a FULL release (not pre-release) so HACS uses release
+          # tracking even with "Show beta versions" off. Otherwise, with only
+          # pre-releases present, HACS falls back to tracking the default branch
+          # (old `main`) and offers a downgrade.
+          prerelease: false
+          files: googlefindmy.zip
