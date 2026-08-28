@@ -130,6 +130,7 @@ from .const import (
     # Defaults
     DEFAULT_LOCATION_POLL_INTERVAL,
     DEFAULT_MAP_VIEW_TOKEN_EXPIRATION,
+    DEFAULT_MIN_ACCURACY_M,
     DEFAULT_OPTIONS,
     DEFAULT_ROUNDTRIP_CONFIRM,
     DEFAULT_SEMANTIC_DETECTION_RADIUS,
@@ -149,6 +150,7 @@ from .const import (
     # Options (non-secret runtime settings)
     OPT_LOCATION_POLL_INTERVAL,
     OPT_MAP_VIEW_TOKEN_EXPIRATION,
+    OPT_MIN_ACCURACY_M,
     OPT_OPTIONS_SCHEMA_VERSION,
     OPT_ROUNDTRIP_CONFIRM,
     OPT_SEMANTIC_LOCATIONS,
@@ -9038,6 +9040,7 @@ class OptionsFlowHandler(OptionsFlowBase, _OptionsFlowMixin, _ContainerLoginMixi
             OPT_ROUNDTRIP_CONFIRM: _get(
                 OPT_ROUNDTRIP_CONFIRM, DEFAULT_ROUNDTRIP_CONFIRM
             ),
+            OPT_MIN_ACCURACY_M: _get(OPT_MIN_ACCURACY_M, DEFAULT_MIN_ACCURACY_M),
             # Advanced override (F3): additional secrets.json watch paths, one per
             # line. Empty by default; the zero-config container-data path is
             # watched automatically without this option. Rendered as a text block
@@ -9170,6 +9173,26 @@ class OptionsFlowHandler(OptionsFlowBase, _OptionsFlowMixin, _ContainerLoginMixi
         _register(vol.Optional(OPT_SHOW_LOCATION_AGE), bool)
         _register(vol.Optional(OPT_SPEED_GATE_ENABLED), bool)
         _register(vol.Optional(OPT_ROUNDTRIP_CONFIRM), bool)
+        if selector is not None:
+            _register(
+                vol.Optional(OPT_MIN_ACCURACY_M),
+                selector(
+                    {
+                        "number": {
+                            "min": 0,
+                            "max": 500,
+                            "step": 10,
+                            "unit_of_measurement": "m",
+                            "mode": "slider",
+                        }
+                    }
+                ),
+            )
+        else:
+            _register(
+                vol.Optional(OPT_MIN_ACCURACY_M),
+                vol.All(vol.Coerce(int), vol.Range(min=0, max=500)),
+            )
         # Advanced override (F3): extra secrets.json watch paths (one per line).
         if selector is not None:
             _register(

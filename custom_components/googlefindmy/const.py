@@ -34,7 +34,7 @@ CONFIG_ENTRY_VERSION: int = 2
 # NOTE: no ": str" annotation on purpose -- semantic-release's version_variables
 # regex only matches `NAME = "x"`, not `NAME: str = "x"`. Re-adding the annotation
 # would silently skip this file on the automated version bump.
-INTEGRATION_VERSION = "1.7.15.10"
+INTEGRATION_VERSION = "1.7.15.11"
 
 # --------------------------------------------------------------------------------------
 # Sound dispatch outcome (API -> coordinator boundary)
@@ -482,6 +482,7 @@ OPT_STALE_THRESHOLD: str = "stale_threshold"
 OPT_SHOW_LOCATION_AGE: str = "show_location_age"
 OPT_SPEED_GATE_ENABLED: str = "speed_gate_enabled"
 OPT_ROUNDTRIP_CONFIRM: str = "roundtrip_confirm_enabled"
+OPT_MIN_ACCURACY_M: str = "min_accuracy_m"
 # Legacy option key - kept for reading old configurations, no longer used
 OPT_STALE_THRESHOLD_ENABLED: str = "stale_threshold_enabled"
 
@@ -503,6 +504,7 @@ OPTION_KEYS: tuple[str, ...] = (
     OPT_SHOW_LOCATION_AGE,
     OPT_SPEED_GATE_ENABLED,
     OPT_ROUNDTRIP_CONFIRM,
+    OPT_MIN_ACCURACY_M,
 )
 
 # Keys which may exist historically in entry.data and should be soft-copied to entry.options
@@ -620,6 +622,11 @@ DEFAULT_DELETE_CACHES_ON_REMOVE: bool = True
 # Minimum: 300 seconds (5 minutes) - allows ~2-3 active-scan update cycles
 DEFAULT_STALE_THRESHOLD: int = 3900
 DEFAULT_SHOW_LOCATION_AGE: bool = True
+# Fixes with accuracy worse than this (in metres) are ignored -- the tracker
+# goes unknown instead of jumping zones on junk crowdsourced reports. 0 =
+# disabled (accept all fixes). Real fixes are typically 2-64 m; junk
+# crowdsourced fixes are typically 107-288 m, so 150 m is the natural split.
+DEFAULT_MIN_ACCURACY_M: int = 150
 
 DEFAULT_SPEED_GATE_ENABLED: bool = True
 # Kinematic plausibility cap (m/s). ~1440 km/h: above the record jetstream
@@ -673,6 +680,7 @@ DEFAULT_OPTIONS: dict[str, object] = {
     OPT_SHOW_LOCATION_AGE: DEFAULT_SHOW_LOCATION_AGE,
     OPT_SPEED_GATE_ENABLED: DEFAULT_SPEED_GATE_ENABLED,
     OPT_ROUNDTRIP_CONFIRM: DEFAULT_ROUNDTRIP_CONFIRM,
+    OPT_MIN_ACCURACY_M: DEFAULT_MIN_ACCURACY_M,
 }
 
 # -------------------- Options schema versioning (lightweight) --------------------
@@ -857,6 +865,12 @@ CONFIG_FIELDS: dict[str, dict[str, object]] = {
     },
     OPT_ROUNDTRIP_CONFIRM: {
         "type": "bool",
+    },
+    OPT_MIN_ACCURACY_M: {
+        "type": "int",
+        "min": 0,
+        "max": 500,
+        "step": 10,
     },
     # OPT_IGNORED_DEVICES is intentionally omitted: it is managed by a dedicated
     # visibility flow and not edited as a raw field (list of ids).
@@ -1116,6 +1130,7 @@ __all__ = [
     "OPT_SHOW_LOCATION_AGE",
     "OPT_SPEED_GATE_ENABLED",
     "OPT_ROUNDTRIP_CONFIRM",
+    "OPT_MIN_ACCURACY_M",
     "OPT_STALE_THRESHOLD_ENABLED",
     "MIGRATE_DATA_KEYS_TO_OPTIONS",
     "UPDATE_INTERVAL",
@@ -1137,6 +1152,7 @@ __all__ = [
     "DEFAULT_DELETE_CACHES_ON_REMOVE",
     "DEFAULT_STALE_THRESHOLD",
     "DEFAULT_SHOW_LOCATION_AGE",
+    "DEFAULT_MIN_ACCURACY_M",
     "DEFAULT_OPTIONS",
     "CONFIG_FIELDS",
     "TOKEN_REFRESH_COOLDOWN_S",
