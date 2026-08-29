@@ -21,8 +21,10 @@ from homeassistant.helpers import entity_registry as er
 from homeassistant.util import dt as dt_util
 
 from .const import (
+    DEFAULT_MAP_VIEW_ENABLED,
     DEFAULT_MAP_VIEW_TOKEN_EXPIRATION,
     DOMAIN,
+    OPT_MAP_VIEW_ENABLED,
     OPT_MAP_VIEW_TOKEN_EXPIRATION,
     WEEK_SECONDS,
     map_token_hex_digest,
@@ -447,6 +449,28 @@ class GoogleFindMyMapView(HomeAssistantView):
             _LOGGER.debug("Map token mismatch for device_id=%s", device_id)
             return _html_response(
                 "Unauthorized", "Invalid authentication token.", status=401
+            )
+
+        # Defense in depth: the views may still be process-wide registered
+        # because another entry wants Map View (HA core has no
+        # unregister_view API), but a resolved entry that has since turned
+        # the feature off must not be served regardless.
+        entry_options = getattr(entry, "options", {}) or {}
+        entry_data = getattr(entry, "data", {}) or {}
+        map_view_enabled = bool(
+            entry_options.get(
+                OPT_MAP_VIEW_ENABLED,
+                entry_data.get(OPT_MAP_VIEW_ENABLED, DEFAULT_MAP_VIEW_ENABLED),
+            )
+        )
+        if not map_view_enabled:
+            _LOGGER.debug(
+                "Map view disabled for entry=%s; refusing device_id=%s",
+                entry.entry_id,
+                device_id,
+            )
+            return _html_response(
+                "Not Found", "Map view is disabled for this account.", status=404
             )
 
         # 2. Resolve Device Name (Best effort from Coordinator)

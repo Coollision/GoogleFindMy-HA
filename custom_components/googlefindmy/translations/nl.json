@@ -53,7 +53,8 @@
           "google_home_filter_enabled": "Google Home-apparaten filteren",
           "google_home_filter_keywords": "Filtertrefwoorden (kommagescheiden)",
           "enable_stats_entities": "Statistiekentiteiten aanmaken",
-          "map_view_token_expiration": "Kaartweergave-tokenverloopdatum inschakelen"
+          "map_view_token_expiration": "Kaartweergave-tokenverloopdatum inschakelen",
+          "map_view_enabled": "Kaartweergave inschakelen"
         }
       },
       "select_hub_for_visibility": {
@@ -284,6 +285,7 @@
           "enable_stats_entities": "Statistiekentiteiten aanmaken",
           "delete_caches_on_remove": "Caches verwijderen bij verwijderen item",
           "map_view_token_expiration": "Kaartweergave-tokenverloopdatum inschakelen",
+          "map_view_enabled": "Kaartweergave inschakelen",
           "contributor_mode": "Locatiebijdragermodus",
           "subentry": "Functiegroep",
           "secrets_extra_watch_paths": "Extra secrets.json-controlepaden (één per regel)"
@@ -296,6 +298,7 @@
           "min_accuracy_m": "Negeer locatiebepalingen die minder nauwkeurig zijn dan deze waarde. Crowdsourced netwerklocaties zijn vaak 100–300 m nauwkeurig en veroorzaken onterechte zonewisselingen bij kleine zones. Standaard 150 m behoudt precieze locaties (eigen telefoon of BLE, doorgaans <50 m) en negeert ruis. Verlaag naar bijvoorbeeld 75 m bij een zeer kleine thuiszone. Zet op 0 om alle locatiebepalingen te accepteren.",
           "delete_caches_on_remove": "Verwijder gecachete tokens en apparaatmetadata wanneer dit item wordt verwijderd.",
           "map_view_token_expiration": "Indien ingeschakeld, verlopen kaartweergavetokens na 1 week. Indien uitgeschakeld (standaard), verlopen tokens niet.",
+          "map_view_enabled": "Indien uitgeschakeld wordt de kaartweergave-webpagina (de /api/googlefindmy/map-link die als configuratie-URL van elk apparaat wordt getoond) helemaal niet aangeboden -- Home Assistant geeft er een gewone 404 voor terug, en apparaatpagina's tonen de link niet meer. Standaard ingeschakeld. Een herstart van Home Assistant is nodig om dit volledig door te voeren: eenmaal aangeboden kan de onderliggende webpagina niet zonder herstart worden teruggedraaid, al wordt een herleid verzoek meteen geweigerd zodra dit uitstaat.",
           "contributor_mode": "Kies hoe je apparaat bijdraagt aan het Google-netwerk (standaard Alle gebieden voor crowdsourced rapportage, of alleen drukbezochte gebieden).",
           "subentry": "Sla deze opties op in de geselecteerde functiegroep. Zie [Subentries en functiegroepen]({subentries_docs_url}) voor voorbeelden.",
           "secrets_extra_watch_paths": "Optioneel. Extra absolute paden naar secrets.json-bestanden die de integratie moet bewaken voor automatische overname, één per regel. Laat leeg om alleen de standaardlocaties te bewaken."

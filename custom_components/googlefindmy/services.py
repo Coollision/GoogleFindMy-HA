@@ -34,9 +34,11 @@ except ImportError:  # pragma: no cover - forward compatibility for HA < 2025.5
     ATTR_ENTRY_ID = "entry_id"
 
 from .const import (
+    DEFAULT_MAP_VIEW_ENABLED,
     DEFAULT_MAP_VIEW_TOKEN_EXPIRATION,
     DOMAIN,
     LEGACY_SERVICE_IDENTIFIER,
+    OPT_MAP_VIEW_ENABLED,  # ctx provides the key but we keep a local fallback constant
     OPT_MAP_VIEW_TOKEN_EXPIRATION,  # ctx provides the key but we keep a local fallback constant
     SERVICE_DEVICE_IDENTIFIER_PREFIX,
     SERVICE_LOCATE_DEVICE,
@@ -1097,11 +1099,54 @@ async def async_register_services(hass: HomeAssistant, ctx: dict[str, Any]) -> N
         opt_key = ctx.get(
             "opt_map_view_token_expiration_key", OPT_MAP_VIEW_TOKEN_EXPIRATION
         )
+        default_map_view_enabled = bool(
+            ctx.get("default_map_view_enabled", DEFAULT_MAP_VIEW_ENABLED)
+        )
+        map_view_enabled_key = ctx.get(
+            "opt_map_view_enabled_key", OPT_MAP_VIEW_ENABLED
+        )
 
         expiration_cache: dict[str, bool] = {}
+        map_view_enabled_cache: dict[str, bool] = {}
         token_cache: dict[str, str] = {}
         ha_uuid = str(hass.data.get("core.uuid", "ha"))
         now = int(time.time())
+
+        def _map_view_enabled(entry_id: str | None) -> bool:
+            cache_key = entry_id or ""
+            if cache_key in map_view_enabled_cache:
+                return map_view_enabled_cache[cache_key]
+
+            entry = entries_by_id.get(entry_id) if entry_id else None
+            enabled = default_map_view_enabled
+
+            if entry:
+                if callable(opt_reader):
+                    try:
+                        enabled = bool(
+                            opt_reader(entry, map_view_enabled_key, default_map_view_enabled)
+                        )
+                    except Exception:
+                        enabled = bool(
+                            entry.options.get(
+                                map_view_enabled_key,
+                                entry.data.get(
+                                    map_view_enabled_key, default_map_view_enabled
+                                ),
+                            )
+                        )
+                else:
+                    enabled = bool(
+                        entry.options.get(
+                            map_view_enabled_key,
+                            entry.data.get(
+                                map_view_enabled_key, default_map_view_enabled
+                            ),
+                        )
+                    )
+
+            map_view_enabled_cache[cache_key] = bool(enabled)
+            return map_view_enabled_cache[cache_key]
 
         def _expiration_enabled(entry_id: str | None) -> bool:
             cache_key = entry_id or ""
@@ -1216,6 +1261,16 @@ async def async_register_services(hass: HomeAssistant, ctx: dict[str, Any]) -> N
 
             canonical_id = _canonical_identifier(device, owner_entry_id)
             if not canonical_id:
+                continue
+
+            if not _map_view_enabled(owner_entry_id):
+                # Map View is off for this entry -- clear any stale
+                # configuration_url rather than refresh a link to a
+                # deliberately-unregistered endpoint.
+                dev_reg.async_update_device(
+                    device_id=device.id, configuration_url=None
+                )
+                updated_count += 1
                 continue
 
             auth_token = _token_for_entry(owner_entry_id)

@@ -53,7 +53,8 @@
           "google_home_filter_enabled": "Filtrer les appareils Google Home",
           "google_home_filter_keywords": "Mots-clés du filtre (séparés par des virgules)",
           "enable_stats_entities": "Créer des entités de statistiques",
-          "map_view_token_expiration": "Activer l’expiration du jeton de la vue carte"
+          "map_view_token_expiration": "Activer l’expiration du jeton de la vue carte",
+          "map_view_enabled": "Enable map view"
         }
       },
       "select_hub_for_visibility": {
@@ -284,6 +285,7 @@
           "enable_stats_entities": "Créer des entités de statistiques",
           "delete_caches_on_remove": "Supprimer les caches lors de la suppression de l’entrée",
           "map_view_token_expiration": "Activer l’expiration du jeton de la vue carte",
+          "map_view_enabled": "Enable map view",
           "contributor_mode": "Mode de contribution de localisation",
           "subentry": "Groupe de fonctionnalités",
           "secrets_extra_watch_paths": "Chemins de surveillance supplémentaires pour secrets.json (un par ligne)"
@@ -296,6 +298,7 @@
           "min_accuracy_m": "Ignore fixes worse than this accuracy. Crowdsourced network fixes are often 100–300 m and cause spurious zone changes near small zones. Default 150 m keeps precise fixes (owner-phone or BLE, typically <50 m) and silences junk. Set lower (e.g. 75 m) if you have a very small home zone. Set to 0 to accept all fixes.",
           "delete_caches_on_remove": "Supprime les jetons mis en cache et les métadonnées des appareils lors de la suppression de cette entrée.",
           "map_view_token_expiration": "Lorsqu'elle est activée, les jetons de la vue carte expirent après 1 semaine. Lorsqu'elle est désactivée (par défaut), ils n'expirent pas.",
+          "map_view_enabled": "When disabled, the Map View web page (the /api/googlefindmy/map link shown as each device's configuration URL) is not served at all -- Home Assistant returns a plain 404 for it, and device pages omit the link. Enabled by default. Requires a Home Assistant restart to fully take effect: once served, the underlying web page cannot be un-served without one, though a resolved request is still refused immediately when this is off.",
           "contributor_mode": "Choisissez comment votre appareil contribue au réseau Google (par défaut Toutes les zones pour une contribution participative ou uniquement les zones à forte affluence).",
           "subentry": "Enregistrez ces options pour le groupe de fonctionnalités sélectionné. Consultez [Sous-entrées et groupes de fonctionnalités]({subentries_docs_url}) pour des exemples.",
           "secrets_extra_watch_paths": "Facultatif. Chemins absolus supplémentaires vers des fichiers secrets.json que l'intégration doit surveiller pour une prise en charge automatique, un par ligne. Laissez vide pour ne surveiller que les emplacements par défaut."

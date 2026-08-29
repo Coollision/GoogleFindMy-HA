@@ -53,7 +53,8 @@
           "google_home_filter_enabled": "סינון התקני Google Home",
           "google_home_filter_keywords": "מילות מפתח לסינון (מופרדות בפסיקים)",
           "enable_stats_entities": "יצירת ישויות סטטיסטיקה",
-          "map_view_token_expiration": "אפשר תפוגת טוקן לתצוגת מפה"
+          "map_view_token_expiration": "אפשר תפוגת טוקן לתצוגת מפה",
+          "map_view_enabled": "Enable map view"
         }
       },
       "select_hub_for_visibility": {
@@ -284,6 +285,7 @@
           "enable_stats_entities": "יצירת ישויות סטטיסטיקה",
           "delete_caches_on_remove": "מחיקת מטמונים בעת הסרת הרשומה",
           "map_view_token_expiration": "אפשר תפוגת טוקן לתצוגת מפה",
+          "map_view_enabled": "Enable map view",
           "contributor_mode": "מצב תרומת מיקומים",
           "subentry": "קבוצת תכונות",
           "secrets_extra_watch_paths": "נתיבי מעקב נוספים ל-secrets.json (אחד בכל שורה)"
@@ -296,6 +298,7 @@
           "min_accuracy_m": "Ignore fixes worse than this accuracy. Crowdsourced network fixes are often 100–300 m and cause spurious zone changes near small zones. Default 150 m keeps precise fixes (owner-phone or BLE, typically <50 m) and silences junk. Set lower (e.g. 75 m) if you have a very small home zone. Set to 0 to accept all fixes.",
           "delete_caches_on_remove": "הסרת טוקנים מאוחסנים ומטא-נתונים של התקנים בעת מחיקת רשומה זו.",
           "map_view_token_expiration": "כאשר מופעל, טוקני תצוגת מפה פגים לאחר שבוע. כאשר מושבת (ברירת מחדל), הטוקנים לא פגים.",
+          "map_view_enabled": "When disabled, the Map View web page (the /api/googlefindmy/map link shown as each device's configuration URL) is not served at all -- Home Assistant returns a plain 404 for it, and device pages omit the link. Enabled by default. Requires a Home Assistant restart to fully take effect: once served, the underlying web page cannot be un-served without one, though a resolved request is still refused immediately when this is off.",
           "contributor_mode": "יש לבחור כיצד ההתקן שלך תורם לרשת של Google (כל האזורים כברירת מחדל לדיווח מקור-קהל, או רק אזורים בעלי תנועה גבוהה).",
           "subentry": "אחסון אפשרויות אלה בקבוצת התכונות שנבחרה. יש לעיין ב[תת-רשומות וקבוצות תכונות]({subentries_docs_url}) לדוגמאות.",
           "secrets_extra_watch_paths": "אופציונלי. נתיבים מוחלטים נוספים לקבצי secrets.json שהשילוב אמור לעקוב אחריהם לצורך איסוף אוטומטי, אחד בכל שורה. יש להשאיר ריק כדי לעקוב אחר מיקומי ברירת המחדל בלבד."

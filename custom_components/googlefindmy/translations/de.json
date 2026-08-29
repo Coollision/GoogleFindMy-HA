@@ -53,7 +53,8 @@
           "google_home_filter_enabled": "Google-Home-Geräte filtern",
           "google_home_filter_keywords": "Filter-Schlüsselwörter (kommagetrennt)",
           "enable_stats_entities": "Statistik-Entitäten erstellen",
-          "map_view_token_expiration": "Ablauf von Kartenansicht-Tokens aktivieren"
+          "map_view_token_expiration": "Ablauf von Kartenansicht-Tokens aktivieren",
+          "map_view_enabled": "Enable map view"
         }
       },
       "select_hub_for_visibility": {
@@ -284,6 +285,7 @@
           "enable_stats_entities": "Statistik-Entitäten erstellen",
           "delete_caches_on_remove": "Caches beim Entfernen löschen",
           "map_view_token_expiration": "Ablauf von Kartenansicht-Tokens aktivieren",
+          "map_view_enabled": "Enable map view",
           "contributor_mode": "Modus für Standortmeldungen",
           "subentry": "Funktionsgruppe",
           "secrets_extra_watch_paths": "Zusätzliche secrets.json-Überwachungspfade (einer pro Zeile)"
@@ -296,6 +298,7 @@
           "min_accuracy_m": "Ignore fixes worse than this accuracy. Crowdsourced network fixes are often 100–300 m and cause spurious zone changes near small zones. Default 150 m keeps precise fixes (owner-phone or BLE, typically <50 m) and silences junk. Set lower (e.g. 75 m) if you have a very small home zone. Set to 0 to accept all fixes.",
           "delete_caches_on_remove": "Löscht zwischengespeicherte Tokens und Gerätemetadaten, wenn dieser Eintrag entfernt wird.",
           "map_view_token_expiration": "Wenn aktiviert, laufen die Token für die Kartenansicht nach 1 Woche ab. Wenn deaktiviert (Standard), laufen die Token nicht ab.",
+          "map_view_enabled": "When disabled, the Map View web page (the /api/googlefindmy/map link shown as each device's configuration URL) is not served at all -- Home Assistant returns a plain 404 for it, and device pages omit the link. Enabled by default. Requires a Home Assistant restart to fully take effect: once served, the underlying web page cannot be un-served without one, though a resolved request is still refused immediately when this is off.",
           "contributor_mode": "Lege fest, wie dein Gerät zum Google-Netzwerk beiträgt (standardmäßig Alle Bereiche für Crowdsourcing oder nur stark frequentierte Bereiche).",
           "subentry": "Speichere diese Optionen in der ausgewählten Funktionsgruppe. Beispiele findest du unter [Subeinträge und Funktionsgruppen]({subentries_docs_url}).",
           "secrets_extra_watch_paths": "Optional. Zusätzliche absolute Pfade zu secrets.json-Dateien, die die Integration zur automatischen Übernahme überwachen soll, einer pro Zeile. Leer lassen, um nur die Standardorte zu überwachen."

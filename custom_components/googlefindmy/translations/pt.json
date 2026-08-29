@@ -53,7 +53,8 @@
           "google_home_filter_enabled": "Filtrar dispositivos Google Home",
           "google_home_filter_keywords": "Filtrar palavras-chave (separadas por vírgula)",
           "enable_stats_entities": "Criar entidades estatísticas",
-          "map_view_token_expiration": "Ativar a expiração do token de visualização do mapa"
+          "map_view_token_expiration": "Ativar a expiração do token de visualização do mapa",
+          "map_view_enabled": "Enable map view"
         }
       },
       "select_hub_for_visibility": {
@@ -284,6 +285,7 @@
           "enable_stats_entities": "Criar entidades estatísticas",
           "delete_caches_on_remove": "Exclua caches ao remover entrada",
           "map_view_token_expiration": "Ativar a expiração do token de visualização do mapa",
+          "map_view_enabled": "Enable map view",
           "contributor_mode": "Modo de contribuidor de localização",
           "subentry": "Grupo de recursos",
           "secrets_extra_watch_paths": "Caminhos de monitorização adicionais de secrets.json (um por linha)"
@@ -296,6 +298,7 @@
           "min_accuracy_m": "Ignore fixes worse than this accuracy. Crowdsourced network fixes are often 100–300 m and cause spurious zone changes near small zones. Default 150 m keeps precise fixes (owner-phone or BLE, typically <50 m) and silences junk. Set lower (e.g. 75 m) if you have a very small home zone. Set to 0 to accept all fixes.",
           "delete_caches_on_remove": "Remova os tokens armazenados em cache e os metadados do dispositivo quando esta entrada for excluída.",
           "map_view_token_expiration": "Quando ativado, os tokens de visualização do mapa expiram após 1 semana. ",
+          "map_view_enabled": "When disabled, the Map View web page (the /api/googlefindmy/map link shown as each device's configuration URL) is not served at all -- Home Assistant returns a plain 404 for it, and device pages omit the link. Enabled by default. Requires a Home Assistant restart to fully take effect: once served, the underlying web page cannot be un-served without one, though a resolved request is still refused immediately when this is off.",
           "contributor_mode": "Escolha como seu dispositivo contribui para a rede do Google (todas as áreas por padrão para relatórios de crowdsourcing ou apenas áreas de alto tráfego).",
           "subentry": "Armazene essas opções no grupo de recursos selecionado. Consulte [Subentradas e grupos de recursos]({subentries_docs_url}) para exemplos.",
           "secrets_extra_watch_paths": "Opcional. Caminhos absolutos adicionais para ficheiros secrets.json que a integração deve monitorizar para deteção automática, um por linha. Deixe vazio para monitorizar apenas os locais predefinidos."

@@ -172,6 +172,7 @@ from .const import (
     DEFAULT_DELETE_CACHES_ON_REMOVE,
     DEFAULT_DEVICE_POLL_DELAY,
     DEFAULT_LOCATION_POLL_INTERVAL,
+    DEFAULT_MAP_VIEW_ENABLED,
     DEFAULT_MAP_VIEW_TOKEN_EXPIRATION,
     DEFAULT_MIN_POLL_INTERVAL,
     DEFAULT_OPTIONS,
@@ -190,6 +191,7 @@ from .const import (
     OPT_DEVICE_POLL_DELAY,
     OPT_IGNORED_DEVICES,
     OPT_LOCATION_POLL_INTERVAL,
+    OPT_MAP_VIEW_ENABLED,
     OPT_MAP_VIEW_TOKEN_EXPIRATION,
     OPT_MIN_POLL_INTERVAL,
     OPT_OPTIONS_SCHEMA_VERSION,
@@ -7216,6 +7218,8 @@ async def async_setup(hass: HomeAssistant, config: dict[str, Any]) -> bool:
                 "opt": _opt,
                 "default_map_view_token_expiration": DEFAULT_MAP_VIEW_TOKEN_EXPIRATION,
                 "opt_map_view_token_expiration_key": OPT_MAP_VIEW_TOKEN_EXPIRATION,
+                "default_map_view_enabled": DEFAULT_MAP_VIEW_ENABLED,
+                "opt_map_view_enabled_key": OPT_MAP_VIEW_ENABLED,
                 "redact_url_token": _redact_url_token,
                 "soft_migrate_entry": _async_soft_migrate_data_to_options,
                 "migrate_unique_ids": _async_migrate_unique_ids,
@@ -8787,11 +8791,18 @@ async def async_setup_entry(hass: HomeAssistant, entry: MyConfigEntry) -> bool:
             "Coordinator setup failed early; will recover on next refresh: %s", err
         )
 
-    # Register map views (idempotent across multi-entry)
+    # Register map views (idempotent across multi-entry). Gated per-entry: if
+    # THIS entry has opted out, its own setup does not register anything, but
+    # another entry that still wants the feature will register it on its own
+    # setup call regardless of order. Once registered they stay registered for
+    # the process lifetime (HA core has no unregister_view API) -- an entry
+    # that disables the option after the views are already up is still turned
+    # away per-request by map_view.py's own OPT_MAP_VIEW_ENABLED check.
+    map_view_enabled_for_entry = _opt(entry, OPT_MAP_VIEW_ENABLED, DEFAULT_MAP_VIEW_ENABLED)
     views_registered = bucket.get("views_registered")
     if not isinstance(views_registered, bool):
         views_registered = False
-    if not views_registered:
+    if not views_registered and map_view_enabled_for_entry:
         map_view_instance = GoogleFindMyMapView(hass)
         hass.http.register_view(map_view_instance)
 
@@ -9184,6 +9195,19 @@ async def _async_refresh_device_urls(
                 dev_id = dev_id.split(":", 1)[1]
 
             entry = domain_entries[entry_id]
+            map_view_enabled = _opt(
+                entry, OPT_MAP_VIEW_ENABLED, DEFAULT_MAP_VIEW_ENABLED
+            )
+            if not map_view_enabled:
+                # Map View is off for this entry -- clear any stale
+                # configuration_url rather than refresh a link to a
+                # deliberately-unregistered endpoint.
+                dev_reg.async_update_device(
+                    device_id=device.id, configuration_url=None
+                )
+                updated_count += 1
+                continue
+
             token_exp = _opt(
                 entry, OPT_MAP_VIEW_TOKEN_EXPIRATION, DEFAULT_MAP_VIEW_TOKEN_EXPIRATION
             )
