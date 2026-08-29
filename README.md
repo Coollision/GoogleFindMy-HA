@@ -229,6 +229,7 @@ Accessible via the ⚙️ cogwheel button on the main Google Find My Device Inte
 | `google_home_filter_enabled` | true | toggle | Enables or disables Google Home device location filtering. |
 | `google_home_filter_keywords` | nest,google,home,mini,hub,display,chromecast,speaker | text input | Comma-separated keywords used to filter out location data from Google Home devices. |
 | `map_view_token_expiration` | false | toggle | Enables expiration of generated API tokens used in Map View history queries. |
+| `map_view_enabled` | true | toggle | Enables the Map View web page for this entry. Turning it off skips registering its HTTP views on this entry's setup and clears any `configuration_url` device links pointing at it; because Home Assistant core has no view-unregister API, if another entry has already registered the view during this process's lifetime the URL pattern still exists until a restart. |
 | `semantic_locations` | none | - | User-defined semantic location zones (managed via a dedicated options flow step). |
 | `delete_caches_on_remove` | true | toggle | Removes stored authentication caches when the integration is deleted. |
 | `contributor_mode` | in_all_areas | selection | Chooses whether Google shares aggregated network-only data (`high_traffic`) or participates in full crowdsourced reporting (`in_all_areas`). |
